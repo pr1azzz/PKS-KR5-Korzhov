@@ -1,0 +1,509 @@
+@page "/products"
+@using BlazorClient.Services
+@using BlazorClient.Models
+@inject ProductService ProductService
+@inject IJSRuntime JsRuntime
+
+<div class="products-container">
+    <div class="page-header">
+        <h2>Управление товарами</h2>
+        <button class="btn-add" @onclick="ShowCreateForm">
+            Добавить товар
+        </button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="loader">Загрузка...</div>
+    }
+    else if (products.Count == 0)
+    {
+        <div class="empty-state">
+            <div class="empty-icon">🛍️</div>
+            <h3>Товаров пока нет</h3>
+            <p>Нажмите "Добавить товар", чтобы начать</p>
+        </div>
+    }
+    else
+    {
+        <div class="products-grid">
+            @foreach (var product in products)
+            {
+                <div class="product-card">
+                    <div class="card-header">
+                        <span class="category-badge">@product.Category</span>
+                                <div class="card-actions">
+                                    <button class="action-btn edit-btn" @onclick="() => ShowEditForm(product)">Редактировать</button>
+                                    <button class="action-btn delete-btn" @onclick="() => ConfirmDelete(product)">Удалить</button>
+                                </div>
+                    </div>
+                    <h3 class="product-name">@product.Name</h3>
+                    <p class="product-description">@product.Description</p>
+                    <div class="product-footer">
+                        <span class="product-price">@product.Price.ToString("F2") ₽</span>
+                        <span class="product-id">ID: @product.Id</span>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@if (showForm)
+{
+    <div class="modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>@(isEditMode ? "Редактировать товар" : "Новый товар")</h3>
+                <button class="close-btn" @onclick="CloseForm">✖</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Название</label>
+                    <input @bind="currentProduct.Name" placeholder="Введите название" />
+                </div>
+                <div class="form-group">
+                    <label>Категория</label>
+                    <input @bind="currentProduct.Category" placeholder="Например: Электроника" />
+                </div>
+                <div class="form-group">
+                    <label>Цена</label>
+                    <input type="number" step="0.01" @bind="currentProduct.Price" placeholder="0.00" />
+                </div>
+                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea @bind="currentProduct.Description" rows="3" placeholder="Описание товара..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" @onclick="CloseForm">Отмена</button>
+                <button class="btn-save" @onclick="SaveProduct">Сохранить</button>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .card-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.action-btn {
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    font-weight: 500;
+}
+
+.edit-btn {
+    background-color: #ffc107;
+    color: #333;
+}
+
+.edit-btn:hover {
+    background-color: #e0a800;
+    transform: translateY(-1px);
+}
+
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+    transform: translateY(-1px);
+}
+
+/* Тёмная тема для кнопок */
+body.dark-theme .edit-btn {
+    background-color: #e0a800;
+    color: #1a1a2e;
+}
+
+body.dark-theme .delete-btn {
+    background-color: #c82333;
+    color: white;
+}
+    .products-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .page-header h2 {
+        margin: 0;
+        color: var(--text-color);
+    }
+    
+    .btn-add {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .btn-add:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .product-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 1.25rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: 1px solid var(--border-color);
+    }
+    
+    .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .category-badge {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+    }
+    
+    .card-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .icon-btn {
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 0.25rem 0.5rem;
+        border-radius: 8px;
+        transition: background 0.2s;
+    }
+    
+    .icon-btn.edit:hover {
+        background: #ffc107;
+        color: white;
+    }
+    
+    .icon-btn.delete:hover {
+        background: #dc3545;
+        color: white;
+    }
+    
+    .product-name {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.25rem;
+        color: var(--text-color);
+    }
+    
+    .product-description {
+        color: #888;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        line-height: 1.4;
+    }
+    
+    .product-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--border-color);
+    }
+    
+    .product-price {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #28a745;
+    }
+    
+    .product-id {
+        font-size: 0.75rem;
+        color: #888;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem;
+        background: var(--card-bg);
+        border-radius: 16px;
+    }
+    
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+    
+    .loader {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-color);
+    }
+    
+    /* Модальное окно */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    overflow: hidden; /* Запрещаем скролл на фоне */
+}
+
+.modal-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    width: 500px;
+    max-width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;    /* Только вертикальная прокрутка если нужно */
+    overflow-x: hidden;  /* Запрещаем горизонтальную прокрутку */
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+/* Скрываем скроллбар для Webkit браузеров (Chrome, Edge, Safari) */
+.modal-card::-webkit-scrollbar {
+    width: 4px;
+}
+
+.modal-card::-webkit-scrollbar-track {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+.modal-card::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 4px;
+}
+
+/* Для Firefox */
+.modal-card {
+    scrollbar-width: thin;
+    scrollbar-color: #667eea var(--border-color);
+}
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .modal-header h3 {
+        margin: 0;
+        color: var(--text-color);
+    }
+    
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-color);
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--text-color);
+    }
+    
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background: var(--card-bg);
+        color: var(--text-color);
+        font-size: 1rem;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+    
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        padding: 1.25rem 1.5rem;
+        border-top: 1px solid var(--border-color);
+    }
+    
+    .btn-cancel {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    
+    .btn-save {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    
+    .btn-save:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+    }
+</style>
+
+@code {
+    private List<Product> products = new();
+    private bool isLoading = true;
+    private bool showForm = false;
+    private bool isEditMode = false;
+    private Product currentProduct = new();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProducts();
+    }
+    
+    private async Task LoadProducts()
+    {
+        isLoading = true;
+        products = await ProductService.GetProductsAsync();
+        isLoading = false;
+    }
+    
+    private void ShowCreateForm()
+    {
+        currentProduct = new Product();
+        isEditMode = false;
+        showForm = true;
+    }
+    
+    private void ShowEditForm(Product product)
+    {
+        currentProduct = new Product
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Price = product.Price,
+            Category = product.Category,
+            Description = product.Description
+        };
+        isEditMode = true;
+        showForm = true;
+    }
+    
+    private async Task SaveProduct()
+    {
+        try
+        {
+            // Проверка заполнения обязательных полей
+            if (string.IsNullOrWhiteSpace(currentProduct.Name))
+            {
+                await JsRuntime.InvokeVoidAsync("alert", "Пожалуйста, введите название товара");
+                return;
+            }
+            
+            if (currentProduct.Price <= 0)
+            {
+                await JsRuntime.InvokeVoidAsync("alert", "Пожалуйста, введите корректную цену");
+                return;
+            }
+            
+            if (isEditMode)
+            {
+                await ProductService.UpdateProductAsync(currentProduct.Id, currentProduct);
+                await JsRuntime.InvokeVoidAsync("alert", "✅ Товар успешно обновлён!");
+            }
+            else
+            {
+                await ProductService.CreateProductAsync(currentProduct);
+                await JsRuntime.InvokeVoidAsync("alert", "✅ Товар успешно добавлен!");
+            }
+            
+            CloseForm();
+            await LoadProducts();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка при сохранении: {ex.Message}");
+            await JsRuntime.InvokeVoidAsync("alert", $"❌ Ошибка: {ex.Message}");
+        }
+    }
+    
+    private async Task ConfirmDelete(Product product)
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", $"🗑️ Удалить товар '{product.Name}'?");
+        if (confirmed)
+        {
+            try
+            {
+                await ProductService.DeleteProductAsync(product.Id);
+                await LoadProducts();
+                await JsRuntime.InvokeVoidAsync("alert", "✅ Товар удалён");
+            }
+            catch (Exception ex)
+            {
+                await JsRuntime.InvokeVoidAsync("alert", $"❌ Ошибка удаления: {ex.Message}");
+            }
+        }
+    }
+    
+    private void CloseForm()
+    {
+        showForm = false;
+        currentProduct = new Product();
+    }
+}

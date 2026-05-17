@@ -1,0 +1,88 @@
+<div class="top-bar">
+    <div class="logo">
+        ShopManager
+    </div>
+    <div class="nav-links">
+        <a href="/" class="nav-link">Главная</a>
+        <a href="/products" class="nav-link">Товары</a>
+    </div>
+    <div class="theme-btn">
+        <ThemeToggle />
+    </div>
+</div>
+
+<style>
+    .top-bar {
+        background-color: #2c3e50;
+        color: white;
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transition: all 0.3s;
+    }
+    
+    .logo {
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+    
+    .nav-links {
+        display: flex;
+        gap: 2rem;
+    }
+    
+    .nav-link {
+        color: white;
+        text-decoration: none;
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: all 0.3s;
+    }
+    
+    .nav-link:hover {
+        background: rgba(255,255,255,0.15);
+    }
+    
+    .theme-btn button {
+        background: rgba(255,255,255,0.15);
+        border: none;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .theme-btn button:hover {
+        background: rgba(255,255,255,0.3);
+    }
+    
+    /* ===== ТЁМНАЯ ТЕМА ДЛЯ ШАПКИ ===== */
+    body.dark-theme .top-bar {
+        background-color: #0d1117;        /* Тёмный, но не чёрный */
+        border-bottom: 2px solid #4a9eff; /* Синяя полоска снизу для выделения */
+        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    
+    body.dark-theme .nav-link:hover {
+        background: rgba(74, 158, 255, 0.2);
+        color: #4a9eff;
+    }
+    
+    body.dark-theme .theme-btn button {
+        background: rgba(74, 158, 255, 0.2);
+        color: #4a9eff;
+    }
+    
+    body.dark-theme .theme-btn button:hover {
+        background: rgba(74, 158, 255, 0.4);
+        color: white;
+    }
+    
+    body.dark-theme .logo {
+        color: #4a9eff;
+    }
+</style>

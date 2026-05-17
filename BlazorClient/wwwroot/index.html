@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopManager - Управление товарами</title>
+    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/app.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="app">Loading...</div>
+    
+    <script src="_framework/blazor.webassembly.js"></script>
+    
+    <script>
+        function applyTheme(isDark) {
+            if (isDark) {
+                document.body.classList.add('dark-theme');
+            } else {
+                document.body.classList.remove('dark-theme');
+            }
+        }
+        
+        // Проверка сохраненной темы при загрузке
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            applyTheme(true);
+        }
+    </script>
+    
+    <style>
+        /* CSS переменные для глобальной темы */
+        :root {
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --header-bg: #2c3e50;
+            --header-text: #ffffff;
+            --border-color: #e0e0e0;
+            --input-bg: #ffffff;
+        }
+        
+        /* Тёмная тема */
+        body.dark-theme {
+            --bg-color: #1a1a2e;
+            --card-bg: #16213e;
+            --text-color: #eeeeee;
+            --header-bg: #0f0f1a;
+            --header-text: #ffffff;
+            --border-color: #2c3e50;
+            --input-bg: #2d2d44;
+        }
+        
+        /* Глобальные стили */
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* Стили для карточек */
+        .product-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        /* Стили для форм */
+        .form-control, input, textarea, select {
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+        
+        .form-control:focus, input:focus, textarea:focus {
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border-color: #667eea;
+            outline: none;
+        }
+        
+        /* Стили для модального окна */
+        .modal-content {
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        /* Стили для таблиц */
+        .table {
+            color: var(--text-color);
+        }
+        
+        .table-striped > tbody > tr:nth-of-type(odd) {
+            background-color: rgba(0,0,0,0.05);
+        }
+        
+        body.dark-theme .table-striped > tbody > tr:nth-of-type(odd) {
+            background-color: rgba(255,255,255,0.05);
+        }
+        
+        /* Кнопки */
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Анимации */
+        .product-card {
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</body>
+</html>

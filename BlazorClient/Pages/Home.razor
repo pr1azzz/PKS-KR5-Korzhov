@@ -1,0 +1,66 @@
+﻿@page "/"
+@inject NavigationManager Navigation
+
+<div class="home-container">
+    <div class="hero">
+        <div class="hero-icon"></div>
+        <h1>Добро пожаловать в ShopManager</h1>
+        <p>Управляйте товарами вашего магазина легко и красиво</p>
+        <button class="btn-hero" @onclick="GoToProducts">
+            Начать управление
+        </button>
+    </div>
+</div>
+
+<style>
+    .home-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .hero {
+        text-align: center;
+        padding: 3rem;
+    }
+    
+    .hero-icon {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: var(--text-color);
+    }
+    
+    .hero p {
+        font-size: 1.2rem;
+        color: #888;
+        margin-bottom: 2rem;
+    }
+    
+    .btn-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1.2rem;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    
+    .btn-hero:hover {
+        transform: translateY(-3px);
+    }
+</style>
+
+@code {
+    private void GoToProducts()
+    {
+        Navigation.NavigateTo("/products");
+    }
+}

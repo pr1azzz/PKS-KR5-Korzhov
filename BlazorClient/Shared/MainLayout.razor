@@ -1,0 +1,46 @@
+@inherits LayoutComponentBase
+
+<div class="app">
+    <NavMenu />
+    <div class="main-content">
+        <div class="content-wrapper">
+            @Body
+        </div>
+    </div>
+</div>
+
+<style>
+    .app {
+        min-height: 100vh;
+        background: var(--bg-color);
+    }
+    
+    .main-content {
+        padding: 2rem;
+    }
+    
+    .content-wrapper {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    /* CSS переменные для темы */
+    :root {
+        --bg-color: #f5f7fa;
+        --card-bg: #ffffff;
+        --text-color: #333;
+        --border-color: #e0e0e0;
+    }
+    
+    body.dark-theme {
+        --bg-color: #1a1a2e;
+        --card-bg: #16213e;
+        --text-color: #eee;
+        --border-color: #2c3e50;
+    }
+    
+    .main-content {
+        background: var(--bg-color);
+        color: var(--text-color);
+    }
+</style>
