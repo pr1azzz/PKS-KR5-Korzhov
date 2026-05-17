@@ -6,8 +6,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-// Упрощённый CORS для отладки (разрешает всё)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>

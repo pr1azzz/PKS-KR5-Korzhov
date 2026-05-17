@@ -106,3 +106,4 @@ C:\project\PKS 5KR\BlazorServer\obj\Debug\net8.0\refint\BlazorServer.dll
 C:\project\PKS 5KR\BlazorServer\obj\Debug\net8.0\BlazorServer.pdb
 C:\project\PKS 5KR\BlazorServer\obj\Debug\net8.0\BlazorServer.genruntimeconfig.cache
 C:\project\PKS 5KR\BlazorServer\obj\Debug\net8.0\ref\BlazorServer.dll
+C:\project\PKS 5KR\BlazorServer\obj\Debug\net8.0\BlazorServer.sourcelink.json
